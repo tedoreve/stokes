@@ -38,20 +38,24 @@ def plot(data,head,contrast,name):
         
     plt.subplots() 
     plt.title(name)
-    
+    plt.xlabel('l (deg)')
+    plt.ylabel('b (deg)')
     plt.imshow(np.log(result[0][0][y1:y2,x1:x2]),origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])
     plt.colorbar()
-    l = np.linspace(l1,l2,data[1].shape[0])
+    l = np.linspace(l2,l1,data[1].shape[0])
     b = np.linspace(b1,b2,data[1].shape[0])
     x,y = np.meshgrid(l,b)
 
     plt.quiver(x,y,data[4]*np.cos(np.deg2rad(data[3])),data[4]*np.sin(np.deg2rad(data[3])))
     
     plt.grid()
+#    plt.close()
+#    plt.imshow(data[4])
+    return x,y
     
 if __name__=='__main__':
-    file=['../data/VGPS_cont_MOS049.fits','../data/fitq28457.fits',           \
-    '../data/fitu28457.fits','../data/fita28457.fits','../data/fitp28457.fits']
+    file=['../data/VGPS_cont_MOS049.fits','../data/fitq28271.fits',           \
+    '../data/fitu28271.fits','../data/fita28271.fits','../data/fitp28271.fits']
     head,data = mag(file)
-    plot(data,head,1,'Magnetic Field')
+    x,y=plot(data,head,1,'Magnetic Field')
 
