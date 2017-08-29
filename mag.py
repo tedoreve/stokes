@@ -7,7 +7,7 @@ from astropy.io import fits
 from astropy import wcs
 from astropy import units as u
 import copy as cp
-from astropy.tests import zmf as z
+import zmf as z
 #from astropy import constants as con
 
 def mag(file):
@@ -27,12 +27,12 @@ def plot(data,head,contrast,name):
     l2 = head[1]['CRVAL1']-head[1]['CRPIX1']*head[1]['CDELT1']
     b2 = head[1]['CRVAL2']+head[1]['CRPIX2']*head[1]['CDELT2']
     result = []
-    for i in range(4):
+    for i in range(len(data)):
         result.append(np.nan_to_num(data[i]))
         result[i] = (result[i]-np.mean(result[i]))+np.mean(result[i])*contrast
     result=np.array(result)
     
-    region = l1,l2,b1,b2 
+    region = 48.7,49.7,-1.0,0 
     head[0]['CUNIT3']='m/s'
     x1,y1,x2,y2 = z.coo_box(head[0],region)
         
@@ -40,22 +40,39 @@ def plot(data,head,contrast,name):
     plt.title(name)
     plt.xlabel('l (deg)')
     plt.ylabel('b (deg)')
-    plt.imshow(np.log(result[0][0][y1:y2,x1:x2]),origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])
-    plt.colorbar()
+    p=data[4]/data[5]
+    plt.imshow(np.log10(result[0][0][y1:y2,x1:x2]),origin='lower',interpolation='nearest',extent=[49.7,48.7,-1.0,0])
+#    plt.imshow(p,origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])      
+    cbar = plt.colorbar()
+    cbar.set_label('log(T/K)')
     l = np.linspace(l2,l1,data[1].shape[0])
     b = np.linspace(b1,b2,data[1].shape[0])
     x,y = np.meshgrid(l,b)
-
-    plt.quiver(x,y,data[4]*np.cos(np.deg2rad(data[3])),data[4]*np.sin(np.deg2rad(data[3])))
     
-    plt.grid()
+#    plt.quiver(x,y,p*np.cos(np.deg2rad(data[3])),p*np.sin(np.deg2rad(data[3])),scale=0.04,color='w')
+    
+#    plt.grid()
 #    plt.close()
 #    plt.imshow(data[4])
-    return x,y
+    return result
     
 if __name__=='__main__':
     file=['../data/VGPS_cont_MOS049.fits','../data/fitq28271.fits',           \
-    '../data/fitu28271.fits','../data/fita28271.fits','../data/fitp28271.fits']
+    '../data/fitu28271.fits','../data/fita28271.fits','../data/fitp28271.fits',\
+    '../data/fits1259.fits']
     head,data = mag(file)
-    x,y=plot(data,head,1,'Magnetic Field')
+    data[4] = data[4]-data[5]*0.007
+    for i in data[4]:
+        for j in i:
+            if j < 0:
+                y=np.where(data[4] == j)[0][0]
+                x=np.where(data[4] == j)[1][0]
+                data[4][y,x]=0
+    for i in data[5]:
+        for j in i:
+            if j < 12540:
+                y=np.where(data[5] == j)[0][0]
+                x=np.where(data[5] == j)[1][0]
+                data[5][y,x]=np.inf
+    p=plot(data,head,1,'1420 MHz continuum')
 
