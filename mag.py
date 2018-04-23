@@ -32,7 +32,7 @@ def plot(data,head,contrast,name):
         result[i] = (result[i]-np.mean(result[i]))+np.mean(result[i])*contrast
     result=np.array(result)
     
-    region = l1,l2,b1,b2 
+    region = 48.7,49.7,-1.0,0 
     head[0]['CUNIT3']='m/s'
     x1,y1,x2,y2 = z.coo_box(head[0],region)
         
@@ -41,6 +41,7 @@ def plot(data,head,contrast,name):
     plt.xlabel('l (deg)')
     plt.ylabel('b (deg)')
     p=data[4]/data[5]
+<<<<<<< HEAD
 #    plt.imshow(np.log10(result[0][0][y1:y2,x1:x2]),origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])
     plt.imshow(p,origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])      
     cbar = plt.colorbar()
@@ -50,8 +51,19 @@ def plot(data,head,contrast,name):
     x,y = np.meshgrid(l,b)
     
     plt.quiver(x,y,p*np.cos(np.deg2rad(data[3])),p*np.sin(np.deg2rad(data[3])),scale=0.04)
+=======
+    plt.imshow(np.log10(result[0][0][y1:y2,x1:x2]),origin='lower',interpolation='nearest',extent=[49.7,48.7,-1.0,0])
+#    plt.imshow(p,origin='lower',interpolation='nearest',extent=[l2,l1,b1,b2])      
+    cbar = plt.colorbar()
+    cbar.set_label('log(T/K)')
+    l = np.linspace(l2,l1,data[1].shape[0])
+    b = np.linspace(b1,b2,data[1].shape[0])
+    x,y = np.meshgrid(l,b)
+>>>>>>> f9ae4365fc0b38cb082b69bf2ee8b3af526481d2
     
-    plt.grid()
+#    plt.quiver(x,y,p*np.cos(np.deg2rad(data[3])),p*np.sin(np.deg2rad(data[3])),scale=0.04,color='w')
+    
+#    plt.grid()
 #    plt.close()
 #    plt.imshow(data[4])
     return result
@@ -61,7 +73,11 @@ if __name__=='__main__':
     '../data/fitu28271.fits','../data/fita28271.fits','../data/fitp28271.fits',\
     '../data/fits1259.fits']
     head,data = mag(file)
+<<<<<<< HEAD
     data[4]=data[4]-data[5]*0.007
+=======
+    data[4] = data[4]-data[5]*0.007
+>>>>>>> f9ae4365fc0b38cb082b69bf2ee8b3af526481d2
     for i in data[4]:
         for j in i:
             if j < 0:
@@ -74,5 +90,9 @@ if __name__=='__main__':
                 y=np.where(data[5] == j)[0][0]
                 x=np.where(data[5] == j)[1][0]
                 data[5][y,x]=np.inf
+<<<<<<< HEAD
     p=plot(data,head,1,'Magnetic Field on 1420 MHz continuum')
+=======
+    p=plot(data,head,1,'1420 MHz continuum')
+>>>>>>> f9ae4365fc0b38cb082b69bf2ee8b3af526481d2
 
